@@ -1,0 +1,26 @@
+#! /usr/bin/ruby
+require 'terutil'
+include TerUtil
+
+def main
+    if ARGV.length == 1
+        puts Remember.read ARGV[0] || "Key '#{key}' was not found."
+    elsif ARGV.length == 2
+        Remember.write ARGV[0], ARGV[1], false
+    else
+        usage
+    end
+
+rescue Interrupt
+end
+
+def usage
+    puts <<~END
+        Usage:
+            Retrieve value: remember <key>
+            Store value:    remember <key> <value>
+            Delete value:   remember <key> ''
+    END
+end
+
+main

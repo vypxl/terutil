@@ -1,0 +1,35 @@
+#! /usr/bin/ruby
+require 'terutil'
+include TerUtil
+
+def main
+    if ARGV.length == 0
+        print Remember.read("c/.") || "No shortcut directory set."
+    elsif ARGV.length == 1
+        if ARGV[0] == '-'
+            Remember.write "c/.", Dir.pwd
+            print '.'
+        else
+            print Remember.read("c/" + ARGV[0]) || "No saved directory '#{ARGV[0]}'."
+        end
+    else
+        usage
+    end
+
+rescue Errno::ENOENT
+    puts "No such directory '#{Remember.read ARGV[0]}'"
+rescue Interrupt
+end
+
+def usage
+    puts <<~END
+        Usage:
+            Jump to shortcut directory:   c
+            Jump to stored directory: c <name>
+
+        To set the shortcut directory, use `c -``
+        To store a directory, use `remember "c/<name>" <directory>`
+    END
+end
+
+main
