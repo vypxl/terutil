@@ -4,13 +4,17 @@ include TerUtil
 
 def main
     if ARGV.length == 0
-        print Remember.read("c/.") || "No shortcut directory set."
+        x = Remember.read("c/.")
+        if x then output 0, x
+        else output 1, "No shortcut directory set." end
     elsif ARGV.length == 1
         if ARGV[0] == '-'
             Remember.write "c/.", Dir.pwd
-            print '.'
+            output 0, '.'
         else
-            print Remember.read("c/" + ARGV[0]) || "No saved directory '#{ARGV[0]}'."
+            x = Remember.read("c/" + ARGV[0])
+            if x then output 0, x
+            else output 1, "No saved directory '#{ARGV[0]}'." end
         end
     else
         usage
@@ -19,6 +23,11 @@ def main
 rescue Errno::ENOENT
     puts "No such directory '#{Remember.read ARGV[0]}'"
 rescue Interrupt
+end
+
+def output(status, message)
+    print message
+    exit status
 end
 
 def usage

@@ -58,10 +58,14 @@ To store a directory, use `remember "c/<name>" <directory>`
 To use it, you have to add a function to your shell so it can cd for you.
 
 #### Sh, Bash, Zsh ..
-Add this to your `~/.bashrc`:
+Add this to your `~/.bashrc` (or whatever rc file):
 ```bash
 function c() {
-    cd $(_c $@)
+    if r=$(_c $@); then
+        cd $r
+    else
+        echo $r
+    fi
 }
 ```
 
@@ -69,7 +73,12 @@ function c() {
 Add this to your `config.fish`
 ```fish
 function c
-    cd (_c $argv)
+    set r (_c $argv)
+    if test $status -eq 0
+        cd $r
+    else
+        echo $r
+    end
 end
 ```
 
