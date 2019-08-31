@@ -14,7 +14,7 @@ module TerUtil::Remember
             FileUtils.mkdir_p FPATH
             reset_file
         end
-        
+
         File.read(FNAME)
     end
 
