@@ -5,6 +5,8 @@
 Featuring:
  - Remember
  - C
+ - Swap
+ - Newfile
 
 ## Installation
 You need ruby >2.6 installed.
@@ -82,5 +84,37 @@ function c
 end
 ```
 
+## Swap
+
+Swap is a little helper which swaps two files.
+Calling `swap file1 file2` is equal to `mv file1 <some tempfile> && mv file2 file1 && <tempfile> file2`.
+
+```
+Usage:
+  swap <file1> <file2>
+```
+
+## Newfile
+
+Newfile is touch with superpowers. Powered by remember, you can create files with premade file headers.
+An example:
+> You want to create a new ruby executable script file. 
+> You would need to `touch script.rb` and enter `#! /usr/bin/ruby` as the first step.
+> With newfile, you can define a file header for ruby files:
+> `remember newf/ruby $(echo -e "#! /usr/bin/ruby\n\n")`
+> and now you can just `newf ruby script.rb` and boom! You have your premade file!
+
+```
+Usage:
+  newf <configuration name> <file name>
+
+To add a configuration:
+  remember newf/<configuration name> <file header>
+
+Example:
+  remember newf/ruby "#! /usr/bin/ruby\n\n"
+```
+
 ## License:
 MIT License (see LICENSE file)
+
