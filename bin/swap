@@ -1,0 +1,38 @@
+#! /usr/bin/ruby
+require 'tempfile'
+require 'fileutils'
+
+def main
+  if ARGV.length != 2
+    usage
+    exit
+  end
+
+  f1, f2 = ARGV
+  if !File.file? f1
+    puts "File '#{f1}' #{if File.directory? f1 then 'is a directory' else 'does not exist' end}."
+    exit 1
+  end
+  if !File.file? f2
+    puts "File '#{f2}' #{if File.directory? f2 then 'is a directory' else 'does not exist' end}."
+    exit 1
+  end
+
+  tmp = Tempfile.new f1
+  tmp.close
+  tmp = tmp.path
+
+  FileUtils.mv f1, tmp
+  FileUtils.mv f2, f1
+  FileUtils.mv tmp, f2
+end
+
+def usage
+  puts <<~END
+    Usage:
+      swap <file1> <file2>
+  END
+end
+
+main
+

@@ -1,0 +1,43 @@
+#! /usr/bin/ruby
+require 'terutil'
+include TerUtil
+
+def main
+  if ARGV.length != 2
+    usage
+    exit
+  end
+
+  conf, fname = ARGV
+
+  if File.exist? fname
+    puts "Cannot write to '#{fname}': File exists"
+  end
+
+  header = Remember.read "newf/#{conf}"
+  if header == nil
+    puts <<~END
+      No configuration with name '#{conf}'.
+      To add this configuration, use:
+        remember "newf/#{conf}" <your file header>
+    END
+  end
+
+  File.write fname, header
+end
+
+def usage
+  puts <<~END
+    Usage:
+      newf <configuration name> <file name>
+
+    To add a configuration:
+      remember newf/<configuration name> <file header>
+
+    Example:
+      remember newf/ruby "#! /usr/bin/ruby\\n\\n"
+  END
+end
+
+main
+
