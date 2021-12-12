@@ -1,0 +1,45 @@
+#! /usr/bin/ruby
+require 'tempfile'
+require 'fileutils'
+
+def usage
+  puts <<~END
+    Usage:
+      dev
+
+    Supported environments (in order of priority):
+     - `./dev` script
+     - npm (`package-lock.json`)
+     - pnpm (`pnpm-lock.yaml`)
+     - yarn (`yarn.lock`)
+  END
+end
+
+def file(fname)
+  return -> { File.file? fname }
+end
+
+def main
+  mappings = {
+    -> { ARGV.length > 0 } => method(:usage),
+    -> { file('./dev').() && File.expand_path($0) != File.expand_path('./dev') } => -> { 
+      if FileTest.executable? './dev'
+        exec './dev'
+      else
+        puts "Found a `./dev` script, but it is not executable by this user.\nDo you want to try to make it executable? [Y/n]"
+        exec "echo chmod +x ./dev && chmod +x ./dev" if "yY\n".include? STDIN.getc
+        exit
+      end
+    },
+    file('./package-lock.json') => -> { exec "npm run dev" },
+    file('./pnpm-lock.yaml') => -> { exec "pnpm run dev" },
+    file('./yarn.lock') => -> { exec "yarn dev" },
+  }
+
+  mappings.each { |cond, cmd| if cond.() then cmd.(); break end }
+  puts "No supported environment found, starting live-server..."
+  exec "live-server"
+end
+
+main
+

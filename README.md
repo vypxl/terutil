@@ -7,6 +7,7 @@ Featuring:
  - C
  - Swap
  - Newfile
+ - Dev
 
 ## Installation
 You need ruby >2.6 installed.
@@ -113,6 +114,22 @@ To add a configuration:
 
 Example:
   remember newf/ruby "#! /usr/bin/ruby\n\n"
+```
+
+## Dev
+
+For those who run their projects by repeatedly typing commands into the terminal:
+
+Dev automatically guesses your current development environment and issues an appropriate command to start execution.
+Currently, dev supports `npm`, `pnpm` and `yarn` environments (there it executes the `run` command defined in `package.json`)
+and directories which have an executable `./dev` script.
+
+I recommend binding the execution of `dev` to some key combination in your editor, or to set up an alias using
+[entr](https://github.com/eradman/entr) and or `timeout` (you could also write that into your `./dev` though).
+
+```
+Usage:
+  dev
 ```
 
 ## License:
