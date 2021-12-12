@@ -16,10 +16,14 @@ jobs:
       - name: Release Gem
         if: contains(github.ref, 'refs/tags/v')
         steps:
-          - run: gem build --strict -o terutil.gem terutil.gemspec
-          - run: mkdir -p ~/.gem
-          - run: "echo -e \"---\n:rubygems_api_key: ${secrets.RUBYGEMS_API_KEY}\" > ~/.gem/credentials"
-          - run: gem push terutil.gem
+          - name: Setup API token
+            run: |
+              mkdir -p ~/.gem
+              echo -e "---\n:rubygems_api_key: ${secrets.RUBYGEMS_API_KEY}" > ~/.gem/credentials
+          - name: Build gem
+            run: gem build --strict -o terutil.gem terutil.gemspec
+          - name: Publish gem
+            run: gem push terutil.gem
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
