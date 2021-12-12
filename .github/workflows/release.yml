@@ -14,7 +14,9 @@ jobs:
       - name: Setup API token
         run: |
           mkdir -p ~/.gem
-          echo -e "---\n:rubygems_api_key: ${secrets.RUBYGEMS_API_KEY}" > ~/.gem/credentials
+          echo -e "---\n:rubygems_api_key: $KEY" > ~/.gem/credentials
+        env:
+          - KEY: ${{ secrets.RUBYGEMS_API_KEY }}
       - name: Build gem
         run: gem build --strict -o terutil.gem terutil.gemspec
       - name: Publish gem
