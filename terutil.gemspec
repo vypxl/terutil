@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
     s.name     = 'terutil'
-    s.version  = '0.3.0'
+    s.version  = '0.3.1'
     s.licenses = ['MIT']
     s.summary  = "Terminal Util - a collection of useful terminal utilities."
     s.authors  = ['vypxl']
