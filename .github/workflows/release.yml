@@ -4,15 +4,12 @@ on:
   push:
     branches:
       - main
-    tags:
-      - v*
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'refs/tags/v')
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Setup API token
         run: |
