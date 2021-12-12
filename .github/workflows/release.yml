@@ -18,7 +18,7 @@ jobs:
         steps:
           - run: gem build --strict -o terutil.gem terutil.gemspec
           - run: mkdir -p ~/.gem
-          - run: echo -e "---\n:rubygems_api_key: ${secrets.RUBYGEMS_API_KEY}" > ~/.gem/credentials
+          - run: "echo -e \"---\n:rubygems_api_key: ${secrets.RUBYGEMS_API_KEY}\" > ~/.gem/credentials"
           - run: gem push terutil.gem
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
