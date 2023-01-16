@@ -3,43 +3,59 @@ require 'tempfile'
 require 'fileutils'
 
 def usage
-  puts <<~END
+  puts <<~USAGE
     Usage:
-      dev
+      dev [-x]
+
+    Options:
+      -x  If a ./dev script is used and entr is installed, do not reload it when it changes (handy if you have an interactive ./dev script)
 
     Supported environments (in order of priority):
-     - `./dev` script
+     - `./dev` script (automatically reloaded via entr -rn if installed)
      - npm (`package-lock.json`)
      - pnpm (`pnpm-lock.yaml`)
      - yarn (`yarn.lock`)
-  END
+  USAGE
 end
 
 def file(fname)
-  return -> { File.file? fname }
+  -> { File.file? fname }
 end
 
 def main
   mappings = {
-    -> { ARGV.length > 0 } => method(:usage),
-    -> { file('./dev').() && File.expand_path($0) != File.expand_path('./dev') } => -> { 
+    -> { !ARGV.empty? && ARGV[0] != '-x' } => lambda {
+      usage
+      exit
+    },
+    -> { file('./dev').call && File.expand_path($PROGRAM_NAME) != File.expand_path('./dev') } => lambda {
+      dont_reload = !ARGV.empty? && ARGV[0] == '-x'
       if FileTest.executable? './dev'
-        exec './dev'
+        system 'entr >/dev/null 2>/dev/null' # check if entr is installed
+        if $CHILD_STATUS == 127 || dont_reload # ENOENT => entr is not installed
+          exec './dev'
+        else
+          exec "sh -c 'find ./dev | entr -rn ./dev'"
+        end
       else
         puts "Found a `./dev` script, but it is not executable by this user.\nDo you want to try to make it executable? [Y/n]"
-        exec "echo chmod +x ./dev && chmod +x ./dev" if "yY\n".include? STDIN.getc
+        exec 'echo chmod +x ./dev && chmod +x ./dev' if "yY\n".include? $stdin.getc
         exit
       end
     },
-    file('./package-lock.json') => -> { exec "npm run dev" },
-    file('./pnpm-lock.yaml') => -> { exec "pnpm run dev" },
-    file('./yarn.lock') => -> { exec "yarn dev" },
+    file('./package-lock.json') => -> { exec 'npm run dev' },
+    file('./pnpm-lock.yaml') => -> { exec 'pnpm run dev' },
+    file('./yarn.lock') => -> { exec 'yarn dev' }
   }
 
-  mappings.each { |cond, cmd| if cond.() then cmd.(); break end }
-  puts "No supported environment found, starting live-server..."
-  exec "live-server"
+  mappings.each do |cond, cmd|
+    if cond.call
+      cmd.call
+      break
+    end
+  end
+  puts 'No supported environment found, fallback to starting live-server...'
+  exec 'live-server'
 end
 
 main
-
